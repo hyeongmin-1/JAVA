@@ -1,15 +1,10 @@
-import java.util.*;
-import java.io.*;
+import java.util.Scanner;
 
 public class Test {
     public static void main(String[] args) throws Exception{
-        File file = new File("C:/Temp/books.txt");
-        FileWriter fw = new FileWriter(file,true);
-        FileReader fr = new FileReader(file);       
-        Scanner scanner = new Scanner(System.in);
-        Book book = new Book();
-        BookManager bookManager = new BookManager();
-        List<Book> bo = new ArrayList<>();
+              
+        Scanner scanner = new Scanner(System.in);      
+        BookManager bookManager = new BookManager();        
         boolean run = true;  
 
         bookManager.loadtFromFile();
@@ -20,59 +15,69 @@ public class Test {
         System.out.println(" 2. 도서 목록 조회");
         System.out.println(" 3. 저장 및 종료");
         System.out.println("메뉴 선택 >>  ");
-        String inputString = scanner.nextLine();         
-            
+        String inputString = scanner.nextLine(); 
+        
         switch (inputString) {
-            case "1":                
+            case "1":
                 System.out.println("[도서 등록]");
-                System.out.println("ID을 입력해주세요:");
-                String id = scanner.nextLine();
-                System.out.println("제목을 입력해주세요");
-                String title = scanner.nextLine();                
-                System.out.println("저자를 입력해주세요:");
-                String author = scanner.nextLine();
-                System.out.println();                
+                
                 try{
-                System.out.println("[도서 등록]");
-                System.out.println("ID: " + id);                
-                System.out.println("제목: " + title);                
-                System.out.println("저자: " + author);       
-                bookManager.addItem(book);
-                fw.write(id);
-                fw.write(title);
-                fw.write(author);               
-                fw.flush();
-                fw.close();                                                                            
-                System.out.println("결과: 성공적으로 등록되었습니다");
+                    System.out.println("ID: ");
+                    int id = Integer.parseInt(scanner.nextLine());
+                    System.out.println("제목: ");
+                    String title = scanner.nextLine();
+                    System.out.println("저자: ");
+                    String author = scanner.nextLine();
+
+                    Book book = new Book(id, title, author);
+                    bookManager.addItem(book);
+                    System.out.println("결과: 성공적으로 등록되었습니다");
                 }catch(Exception e){
-                    e.printStackTrace();
-                    System.out.println("결과: 도서가 가득 찼습니다");
-                }                
-                System.out.println("==============================");
-                break;
-            case "2":                                
-                System.out.println("[도서 목록 조회]");
-                bookManager.displayAll();                                
-            try{                
-                int readCharNo;
-                char[] cbuf = new char[10000];
-                while ((readCharNo = fr.read(cbuf)) != -1) {
-                    String data = new String(cbuf,0,readCharNo);
-                    System.out.println(data);                    
+                    System.out.println("가득 찼습니다");
                 }
-                fr.close();
-            }catch(Exception e){
-                e.printStackTrace();
-                System.out.println("등록된 도서가 없습니다");
-            }              
+                System.out.println("=========================");                
                 break;
-            case "3":    
+            
+            case "2":
+                boolean searchRun = true;
+                while (searchRun) {                  
+                    System.out.println("[도서 목록 조회]");
+                    System.out.println("1. 전체조회");
+                    System.out.println("2. ID 개별 조회");
+                    System.out.println("조회 방식 선택 >> ");
+                    String subChoice = scanner.nextLine();
+
+                    if(subChoice.equals("1")){
+                        bookManager.displayAll();
+                        searchRun = false;
+                    }else if(subChoice.equals("2")){
+                        try{
+                            System.out.println("검색할 ID: ");
+                            int searchID = Integer.parseInt(scanner.nextLine());
+                            bookManager.searchById(searchID);
+                            searchRun = false;
+                        }catch(Exception e){
+                            System.out.println("오류: ID는 숫자로 입력해주세요");
+                        }
+                    }else{
+                        System.out.println("잘못된 입력입니다.");
+                    }
+                }
+                System.out.println("================================");
+                break;
+            
+            case "3":
                 bookManager.saveToFile();
                 run = false;
-                System.out.println("정상적으로 종료되었습니다.");
+                System.out.println("정상적으로 종료되었습니다");        
                 break;
+            
+            default:
+                System.out.println("잘못된 입력입니다.");
+                break;
+        }          
         }
-        }
-
+        scanner.close();
     }
 }
+
